@@ -5,14 +5,13 @@
  * Use of this software requires acceptance of the Evaluation License Agreement. See LICENSE file.
  */
 
-namespace SprykerTest\Client\Redis\Adapter;
+namespace SprykerTest\Client\Redis;
 
 use Codeception\Test\Unit;
 use Generated\Shared\Transfer\RedisConfigurationTransfer;
 use Predis\Client;
 use Spryker\Client\Redis\Adapter\Factory\PredisAdapterFactory;
 use Spryker\Client\Redis\Compressor\Strategy\ZlibCompressorStrategy;
-use SprykerTest\Client\Redis\RedisClientTester;
 
 /**
  * Auto-generated group annotations
@@ -20,7 +19,6 @@ use SprykerTest\Client\Redis\RedisClientTester;
  * @group SprykerTest
  * @group Client
  * @group Redis
- * @group Adapter
  * @group RedisClientTest
  * Add your own group annotations below this line
  */
