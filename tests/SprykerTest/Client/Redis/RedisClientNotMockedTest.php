@@ -11,6 +11,7 @@ use Codeception\Test\Unit;
 use Exception;
 use Generated\Shared\Transfer\RedisConfigurationTransfer;
 use Generated\Shared\Transfer\RedisCredentialsTransfer;
+use Predis\Client;
 
 /**
  * Auto-generated group annotations
@@ -196,6 +197,10 @@ class RedisClientNotMockedTest extends Unit
      */
     public function testSetWithExpiration(bool $usePhpredis): void
     {
+        if (version_compare(Client::VERSION, '2.0.0', '<')) {
+            $this->markTestSkipped('Test is not compatible with Predis version 1.x.');
+        }
+
         // Arrange
         $this->mockConfig($usePhpredis, false);
 
@@ -302,6 +307,10 @@ class RedisClientNotMockedTest extends Unit
      */
     public function testEvalWithInvalidScript(bool $usePhpredis): void
     {
+        if (version_compare(Client::VERSION, '2.0.0', '<')) {
+            $this->markTestSkipped('Test is not compatible with Predis version 1.x.');
+        }
+
         // Arrange
         $this->mockConfig($usePhpredis, false);
         $script = 'invalid lua script';
