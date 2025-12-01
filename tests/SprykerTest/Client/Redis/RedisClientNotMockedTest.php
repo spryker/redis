@@ -618,6 +618,8 @@ class RedisClientNotMockedTest extends Unit
         for ($i = 0; $i < 10; $i++) {
             $this->tester->getClient()->set(static::CONNECTION_KEY, $keyPrefix . $i, static::TEST_VALUE);
         }
+        $invalidKey = 'foo_scan_0';
+        $this->tester->getClient()->set(static::CONNECTION_KEY, $invalidKey, static::TEST_VALUE);
 
         // Act
         $cursor = 0;
@@ -627,17 +629,18 @@ class RedisClientNotMockedTest extends Unit
             [$cursor, $result] = $this->tester->getClient()->scan(
                 static::CONNECTION_KEY,
                 $cursor,
-                ['pattern' => $keyPrefix . '*', 'count' => 5],
+                ['MATCH' => $keyPrefix . '*', 'COUNT' => 5],
             );
             $cursor = (int)$cursor;
             $keys = array_merge($keys, $result);
         } while ($cursor !== 0);
 
         // Assert
-        $this->assertGreaterThanOrEqual(10, count($keys));
+        $this->assertCount(10, $keys);
         for ($i = 0; $i < 10; $i++) {
             $this->assertContains($keyPrefix . $i, $keys);
         }
+        $this->assertNotContains($invalidKey, $keys);
     }
 
     /**

@@ -103,6 +103,8 @@ class VersionAgnosticPhpredisAdapter implements RedisAdapterInterface
             0,
             $this->client->getReadTimeout(),
         );
+
+        $this->client->setOption(Redis::OPT_SCAN, Redis::SCAN_RETRY);
     }
 
     /**
@@ -179,8 +181,8 @@ class VersionAgnosticPhpredisAdapter implements RedisAdapterInterface
      */
     public function scan(int $cursor, array $options): array
     {
-        $pattern = $options['pattern'] ?? null;
-        $count = $options['count'] ?? null;
+        $pattern = $options['MATCH'] ?? $options['match'] ?? null;
+        $count = $options['COUNT'] ?? $options['count'] ?? null;
         if ($cursor === 0) {
             $cursor = null;
         }
@@ -188,10 +190,10 @@ class VersionAgnosticPhpredisAdapter implements RedisAdapterInterface
         $result = $this->client->scan($cursor, $pattern, $count);
 
         if ($result === false) {
-            return [$cursor, []];
+            return [(string)$cursor, []];
         }
 
-        return [$cursor, $result];
+        return [(string)$cursor, $result];
     }
 
     /**
