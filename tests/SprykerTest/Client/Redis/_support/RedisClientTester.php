@@ -43,7 +43,8 @@ class RedisClientTester extends Actor
         $class = new ReflectionClass(RedisAdapterProvider::class);
         $property = $class->getProperty('clientPool');
         $property->setAccessible(true);
-        $property->setValue([]);
+        // setValue for static properties requires passing null as the object parameter
+        $property->setValue(null, []);
     }
 
     /**

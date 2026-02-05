@@ -59,15 +59,6 @@ class RedisClientNotMockedTest extends Unit
     }
 
     /**
-     * @return void
-     */
-    protected function tearDown(): void
-    {
-        parent::tearDown();
-        $this->cleanupRedis();
-    }
-
-    /**
      * @dataProvider getUsePhpredisDataProvider
      *
      * @param bool $usePhpredis
@@ -654,7 +645,6 @@ class RedisClientNotMockedTest extends Unit
     {
         // Arrange
         $this->mockConfig($usePhpredis, false);
-        $this->cleanupRedis();
 
         // Set a known number of keys
         for ($i = 0; $i < 5; $i++) {
@@ -788,6 +778,7 @@ class RedisClientNotMockedTest extends Unit
             );
 
         $this->tester->getClient()->setupConnection(static::CONNECTION_KEY, $configurationTransfer);
+        $this->tester->getClient()->flushDb(static::CONNECTION_KEY);
     }
 
     /**
@@ -802,13 +793,5 @@ class RedisClientNotMockedTest extends Unit
             ->setDatabase(5) // unique number different from StorageRedisConstants::STORAGE_REDIS_DATABASE, because it  will be flushed during tests
             ->setPassword(false) // StorageRedisConstants::STORAGE_REDIS_PASSWORD
             ->setIsPersistent(true); // StorageRedisConstants::STORAGE_REDIS_PERSISTENT_CONNECTION
-    }
-
-    /**
-     * @return void
-     */
-    protected function cleanupRedis(): void
-    {
-        $this->tester->getClient()->flushDb(static::CONNECTION_KEY);
     }
 }
