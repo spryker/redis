@@ -51,6 +51,7 @@ class VersionAgnosticPredisAdapter implements RedisAdapterInterface
     {
         $result = $this->client->setex($key, $seconds, $value);
 
+        // @phpstan-ignore instanceof.alwaysTrue (defensive programming for type safety)
         if ($result instanceof Status) {
             return $result->getPayload() === static::OK_WRITE_STATUS;
         }
@@ -93,6 +94,7 @@ class VersionAgnosticPredisAdapter implements RedisAdapterInterface
      */
     public function eval(string $script, int $numKeys, array $keysOrArgs): bool
     {
+        // @phpstan-ignore argument.named (array keys are numeric indices, not named arguments)
         return (bool)$this->client->eval($script, $numKeys, ...$keysOrArgs);
     }
 
