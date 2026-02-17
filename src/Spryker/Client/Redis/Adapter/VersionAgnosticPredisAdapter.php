@@ -69,7 +69,7 @@ class VersionAgnosticPredisAdapter implements RedisAdapterInterface
      */
     public function set(string $key, string $value, ?string $expireResolution = null, ?int $expireTTL = null, ?string $flag = null): bool
     {
-        return $expireTTL !== null
+        return $expireTTL !== null || $flag !== null
             ? (bool)$this->client->set($key, $value, $expireResolution, $expireTTL, $flag)
             : (bool)$this->client->set($key, $value);
     }
