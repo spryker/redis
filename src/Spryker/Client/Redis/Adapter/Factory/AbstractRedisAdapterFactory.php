@@ -31,11 +31,6 @@ abstract class AbstractRedisAdapterFactory implements RedisAdapterFactoryInterfa
      */
     protected const CONNECTION_OPTIONS = 'CONNECTION_OPTIONS';
 
-    /**
-     * @param \Spryker\Client\Redis\RedisConfig $redisConfig
-     * @param \Spryker\Shared\Redis\Dependency\Service\RedisToUtilEncodingServiceInterface $utilEncodingService
-     * @param \Spryker\Client\Redis\Compressor\CompressorInterface $compressor
-     */
     public function __construct(
         protected RedisConfig $redisConfig,
         protected RedisToUtilEncodingServiceInterface $utilEncodingService,
@@ -43,11 +38,6 @@ abstract class AbstractRedisAdapterFactory implements RedisAdapterFactoryInterfa
     ) {
     }
 
-    /**
-     * @param \Generated\Shared\Transfer\RedisConfigurationTransfer $redisConfigurationTransfer
-     *
-     * @return \Spryker\Client\Redis\Adapter\RedisAdapterInterface
-     */
     public function create(RedisConfigurationTransfer $redisConfigurationTransfer): RedisAdapterInterface
     {
         if (!$this->redisConfig->isDevelopmentMode()) {
@@ -57,18 +47,8 @@ abstract class AbstractRedisAdapterFactory implements RedisAdapterFactoryInterfa
         return $this->createLoggableRedisAdapter($redisConfigurationTransfer);
     }
 
-    /**
-     * @param \Generated\Shared\Transfer\RedisConfigurationTransfer $redisConfigurationTransfer
-     *
-     * @return \Spryker\Client\Redis\Adapter\RedisAdapterInterface
-     */
     abstract protected function createVersionAgnosticAdapter(RedisConfigurationTransfer $redisConfigurationTransfer): RedisAdapterInterface;
 
-    /**
-     * @param \Generated\Shared\Transfer\RedisConfigurationTransfer $redisConfigurationTransfer
-     *
-     * @return \Spryker\Client\Redis\Adapter\RedisAdapterInterface
-     */
     protected function createRedisCompressionAdapter(RedisConfigurationTransfer $redisConfigurationTransfer): RedisAdapterInterface
     {
         return new RedisCompressionAdapter(
@@ -77,11 +57,6 @@ abstract class AbstractRedisAdapterFactory implements RedisAdapterFactoryInterfa
         );
     }
 
-    /**
-     * @param \Generated\Shared\Transfer\RedisConfigurationTransfer $redisConfigurationTransfer
-     *
-     * @return \Spryker\Client\Redis\Adapter\RedisAdapterInterface
-     */
     protected function createLoggableRedisAdapter(RedisConfigurationTransfer $redisConfigurationTransfer): RedisAdapterInterface
     {
         return new LoggableRedisAdapter(
@@ -90,11 +65,6 @@ abstract class AbstractRedisAdapterFactory implements RedisAdapterFactoryInterfa
         );
     }
 
-    /**
-     * @param \Generated\Shared\Transfer\RedisConfigurationTransfer $redisConfigurationTransfer
-     *
-     * @return \Spryker\Shared\Redis\Logger\RedisLoggerInterface
-     */
     protected function createRedisLogger(RedisConfigurationTransfer $redisConfigurationTransfer): RedisLoggerInterface
     {
         return new RedisInMemoryLogger($this->utilEncodingService, $redisConfigurationTransfer);
@@ -122,11 +92,6 @@ abstract class AbstractRedisAdapterFactory implements RedisAdapterFactoryInterfa
         throw new ConnectionConfigurationException('Redis connection parameters are corrupt. Either DSN string or an array of configuration values should be provided.');
     }
 
-    /**
-     * @param \Generated\Shared\Transfer\RedisConfigurationTransfer $redisConfigurationTransfer
-     *
-     * @return array
-     */
     protected function getFilteredConnectionCredentials(RedisConfigurationTransfer $redisConfigurationTransfer): array
     {
         $connectionCredentialsTransfer = $redisConfigurationTransfer->getConnectionCredentials();
@@ -142,11 +107,6 @@ abstract class AbstractRedisAdapterFactory implements RedisAdapterFactoryInterfa
         return $connectionCredentials;
     }
 
-    /**
-     * @param array $connectionCredentials
-     *
-     * @return array
-     */
     protected function clearEmptyPassword(array $connectionCredentials): array
     {
         if (isset($connectionCredentials[RedisCredentialsTransfer::PASSWORD]) && !$connectionCredentials[RedisCredentialsTransfer::PASSWORD]) {
@@ -156,11 +116,6 @@ abstract class AbstractRedisAdapterFactory implements RedisAdapterFactoryInterfa
         return $connectionCredentials;
     }
 
-    /**
-     * @param array $connectionCredentials
-     *
-     * @return array
-     */
     protected function clearEmptySchema(array $connectionCredentials): array
     {
         if (array_key_exists(RedisCredentialsTransfer::SCHEME, $connectionCredentials) && !$connectionCredentials[RedisCredentialsTransfer::SCHEME]) {

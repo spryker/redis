@@ -51,9 +51,6 @@ class LoggableRedisAdapterTest extends Unit
         $this->setupLoggableRedisAdapter();
     }
 
-    /**
-     * @return void
-     */
     public function testCanHandleGetCall(): void
     {
         $key = 'redis:key';
@@ -67,9 +64,6 @@ class LoggableRedisAdapterTest extends Unit
         $this->loggableRedisAdapter->get($key);
     }
 
-    /**
-     * @return void
-     */
     public function testCanHandleSetexCall(): void
     {
         $key = 'redis:key';
@@ -85,9 +79,6 @@ class LoggableRedisAdapterTest extends Unit
         $this->loggableRedisAdapter->setex($key, $seconds, $value);
     }
 
-    /**
-     * @return void
-     */
     public function testCanHandleSetCall(): void
     {
         $key = 'redis:key';
@@ -120,9 +111,6 @@ class LoggableRedisAdapterTest extends Unit
         );
     }
 
-    /**
-     * @return void
-     */
     public function testCanHandleDelCall(): void
     {
         $keys = ['redis:key:1', 'redis:key:2', 'redis:key:3'];
@@ -142,9 +130,6 @@ class LoggableRedisAdapterTest extends Unit
         $this->loggableRedisAdapter->del($keys);
     }
 
-    /**
-     * @return void
-     */
     public function testCanHandleEvalCall(): void
     {
         $script = 'script';
@@ -168,9 +153,6 @@ class LoggableRedisAdapterTest extends Unit
         $this->loggableRedisAdapter->eval($script, $numKeys, $keysOrArgs);
     }
 
-    /**
-     * @return void
-     */
     public function testCanHandleMgetCall(): void
     {
         $keys = ['redis:key:1', 'redis:key:2', 'redis:key:3'];
@@ -190,9 +172,6 @@ class LoggableRedisAdapterTest extends Unit
         $this->loggableRedisAdapter->mget($keys);
     }
 
-    /**
-     * @return void
-     */
     public function testCanHandleMsetCall(): void
     {
         $dictionary = ['redis:key:1' => 'one', 'redis:key:2' => 'two', 'redis:key:3' => 'three'];
@@ -212,9 +191,6 @@ class LoggableRedisAdapterTest extends Unit
         $this->loggableRedisAdapter->mset($dictionary);
     }
 
-    /**
-     * @return void
-     */
     public function testCanHandleInfoCall(): void
     {
         $section = 'section';
@@ -234,9 +210,6 @@ class LoggableRedisAdapterTest extends Unit
         $this->loggableRedisAdapter->info($section);
     }
 
-    /**
-     * @return void
-     */
     public function testCanHandleKeysCall(): void
     {
         $pattern = 'key:*';
@@ -256,9 +229,6 @@ class LoggableRedisAdapterTest extends Unit
         $this->loggableRedisAdapter->keys($pattern);
     }
 
-    /**
-     * @return void
-     */
     public function testCanHandleScanCall(): void
     {
         $cursor = 1;
@@ -280,9 +250,6 @@ class LoggableRedisAdapterTest extends Unit
         $this->loggableRedisAdapter->scan($cursor, $options);
     }
 
-    /**
-     * @return void
-     */
     public function testCanHandleDbSizeCall(): void
     {
         $returnValue = 1;
@@ -295,9 +262,6 @@ class LoggableRedisAdapterTest extends Unit
         $this->loggableRedisAdapter->dbSize();
     }
 
-    /**
-     * @return void
-     */
     public function testCanHandleFlushDbCall(): void
     {
         $this->redisAdapterMock->expects($this->once())->method('flushDb');
@@ -308,9 +272,6 @@ class LoggableRedisAdapterTest extends Unit
         $this->loggableRedisAdapter->flushDb();
     }
 
-    /**
-     * @return void
-     */
     public function testCanHandleIncr(): void
     {
         // Arrange
@@ -324,9 +285,6 @@ class LoggableRedisAdapterTest extends Unit
         $this->loggableRedisAdapter->incr($key);
     }
 
-    /**
-     * @return void
-     */
     protected function setupLoggableRedisAdapter(): void
     {
         $this->loggableRedisAdapter = new LoggableRedisAdapter(

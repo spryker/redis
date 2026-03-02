@@ -20,11 +20,6 @@ class Compressor implements CompressorInterface
     {
     }
 
-    /**
-     * @param string $value
-     *
-     * @return bool
-     */
     public function canBeCompressed(string $value): bool
     {
         return $this->redisConfig->isCompressionEnabled()
@@ -33,11 +28,6 @@ class Compressor implements CompressorInterface
             && strlen($value) > $this->redisConfig->getMinBytesForCompression();
     }
 
-    /**
-     * @param string $value
-     *
-     * @return bool
-     */
     public function isCompressed(string $value): bool
     {
         if (!$value) {
@@ -53,11 +43,6 @@ class Compressor implements CompressorInterface
         return false;
     }
 
-    /**
-     * @param string $value
-     *
-     * @return string
-     */
     public function compress(string $value): string
     {
         $keyValueCompressorStrategy = reset($this->keyValueCompressorStrategies);
@@ -70,11 +55,6 @@ class Compressor implements CompressorInterface
         return $compressedValue ?: $value;
     }
 
-    /**
-     * @param string $value
-     *
-     * @return string
-     */
     public function decompress(string $value): string
     {
         foreach ($this->keyValueCompressorStrategies as $keyValueCompressorStrategy) {

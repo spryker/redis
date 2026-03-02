@@ -112,9 +112,6 @@ class PredisCompressionAdapterTest extends Unit
         $this->redisCompressionAdapter->set(RedisClientTester::KEY, $originalValue);
     }
 
-    /**
-     * @return void
-     */
     public function testCanHandleDelCall(): void
     {
         // Arrange
@@ -131,9 +128,6 @@ class PredisCompressionAdapterTest extends Unit
         $this->redisCompressionAdapter->del($keys);
     }
 
-    /**
-     * @return void
-     */
     public function testCanHandleEvalCall(): void
     {
         // Arrange
@@ -201,9 +195,6 @@ class PredisCompressionAdapterTest extends Unit
         $this->redisCompressionAdapter->mset($dictionary);
     }
 
-    /**
-     * @return void
-     */
     public function testCanHandleInfoCall(): void
     {
         // Arrange
@@ -220,9 +211,6 @@ class PredisCompressionAdapterTest extends Unit
         $this->redisCompressionAdapter->info($section);
     }
 
-    /**
-     * @return void
-     */
     public function testCanHandleKeysCall(): void
     {
         // Arrange
@@ -238,9 +226,6 @@ class PredisCompressionAdapterTest extends Unit
         $this->redisCompressionAdapter->keys(RedisClientTester::KEY);
     }
 
-    /**
-     * @return void
-     */
     public function testCanHandleScanCall(): void
     {
         // Arrange
@@ -258,9 +243,6 @@ class PredisCompressionAdapterTest extends Unit
         $this->redisCompressionAdapter->scan($cursor, $options);
     }
 
-    /**
-     * @return void
-     */
     public function testCanHandleDbSizeCall(): void
     {
         // Arrange
@@ -273,9 +255,6 @@ class PredisCompressionAdapterTest extends Unit
         $this->redisCompressionAdapter->dbSize();
     }
 
-    /**
-     * @return void
-     */
     public function testCanHandleFlushDbCall(): void
     {
         // Arrange
@@ -288,9 +267,6 @@ class PredisCompressionAdapterTest extends Unit
         $this->redisCompressionAdapter->flushDb();
     }
 
-    /**
-     * @return void
-     */
     public function testCanHandleIncr(): void
     {
         // Arrange
@@ -303,11 +279,6 @@ class PredisCompressionAdapterTest extends Unit
         $this->redisCompressionAdapter->incr(RedisClientTester::KEY);
     }
 
-    /**
-     * @param bool $isCompressionEnabled
-     *
-     * @return void
-     */
     protected function setupPredisCompressionAdapter(bool $isCompressionEnabled = true): void
     {
         $this->tester->mockConfigMethod('isCompressionEnabled', $isCompressionEnabled);

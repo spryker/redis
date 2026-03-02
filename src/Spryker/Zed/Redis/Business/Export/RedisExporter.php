@@ -18,9 +18,6 @@ class RedisExporter implements RedisExporterInterface
      */
     protected $config;
 
-    /**
-     * @param \Spryker\Zed\Redis\RedisConfig $config
-     */
     public function __construct(RedisConfig $config)
     {
         $this->config = $config;
@@ -49,13 +46,6 @@ class RedisExporter implements RedisExporterInterface
         return $process->isSuccessful();
     }
 
-    /**
-     * @param string $destination
-     * @param int|null $redisPort
-     * @param string|null $redisHost
-     *
-     * @return string
-     */
     protected function buildExportCliCommand(string $destination, ?int $redisPort = null, ?string $redisHost = null): string
     {
         return sprintf(

@@ -18,17 +18,11 @@ use Spryker\Zed\Redis\Business\Import\RedisImporterInterface;
  */
 class RedisBusinessFactory extends AbstractBusinessFactory
 {
-    /**
-     * @return \Spryker\Zed\Redis\Business\Import\RedisImporterInterface
-     */
     public function createRedisImporter(): RedisImporterInterface
     {
         return new RedisImporter($this->getConfig());
     }
 
-    /**
-     * @return \Spryker\Zed\Redis\Business\Export\RedisExporterInterface
-     */
     public function createRedisExporter(): RedisExporterInterface
     {
         return new RedisExporter($this->getConfig());

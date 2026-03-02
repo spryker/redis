@@ -16,9 +16,6 @@ use Symfony\Component\HttpKernel\DataCollector\DataCollector;
 
 class RedisFactory extends AbstractFactory
 {
-    /**
-     * @return \Symfony\Component\HttpKernel\DataCollector\DataCollector
-     */
     public function createRedisDataCollector(): DataCollector
     {
         return new RedisDataCollector(
@@ -26,9 +23,6 @@ class RedisFactory extends AbstractFactory
         );
     }
 
-    /**
-     * @return \Spryker\Shared\Redis\Logger\RedisLoggerInterface
-     */
     public function createRedisLogger(): RedisLoggerInterface
     {
         return new RedisInMemoryLogger(
@@ -36,9 +30,6 @@ class RedisFactory extends AbstractFactory
         );
     }
 
-    /**
-     * @return \Spryker\Shared\Redis\Dependency\Service\RedisToUtilEncodingServiceInterface
-     */
     public function getUtilEncodingService(): RedisToUtilEncodingServiceInterface
     {
         return $this->getProvidedDependency(RedisDependencyProvider::SERVICE_UTIL_ENCODING);

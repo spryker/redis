@@ -9,12 +9,5 @@ namespace Spryker\Zed\Redis\Business\Export;
 
 interface RedisExporterInterface
 {
-    /**
-     * @param string $destination
-     * @param int|null $redisPort
-     * @param string|null $redisHost
-     *
-     * @return bool
-     */
     public function export(string $destination, ?int $redisPort = null, ?string $redisHost = null): bool;
 }

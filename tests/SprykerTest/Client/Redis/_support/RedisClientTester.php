@@ -35,9 +35,6 @@ class RedisClientTester extends Actor
      */
     public const KEY = 'redis:key';
 
-    /**
-     * @return void
-     */
     public function resetClientPool(): void
     {
         $class = new ReflectionClass(RedisAdapterProvider::class);
@@ -47,39 +44,20 @@ class RedisClientTester extends Actor
         $property->setValue(null, []);
     }
 
-    /**
-     * @return \Spryker\Client\Redis\Compressor\Strategy\CompressorStrategyInterface
-     */
     public function createTestCompressorStrategy(): CompressorStrategyInterface
     {
         return new class implements CompressorStrategyInterface
         {
-            /**
-             * @param mixed $value
-             *
-             * @return bool
-             */
             public function isCompressed(mixed $value): bool
             {
                 return str_starts_with($value, 'custom');
             }
 
-            /**
-             * @param string $value
-             * @param int $level
-             *
-             * @return string|null
-             */
             public function compress(string $value, int $level): ?string
             {
                 return 'custom' . $value;
             }
 
-            /**
-             * @param string $value
-             *
-             * @return string|null
-             */
             public function decompress(string $value): ?string
             {
                 return ltrim($value, 'custom');

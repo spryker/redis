@@ -275,11 +275,6 @@ class RedisClient extends AbstractClient implements RedisClientInterface
         return $this->getConnection($connectionKey)->incr($key);
     }
 
-    /**
-     * @param string $connectionKey
-     *
-     * @return \Spryker\Client\Redis\Adapter\RedisAdapterInterface
-     */
     protected function getConnection(string $connectionKey): RedisAdapterInterface
     {
         return $this->getFactory()->createRedisAdapterProvider()->getAdapter($connectionKey);

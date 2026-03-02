@@ -49,9 +49,6 @@ class RedisInMemoryLoggerTest extends Unit
         $this->assertSame($expectedResult, $redisInMemoryLogger->getLogs());
     }
 
-    /**
-     * @return array
-     */
     public function canLogCallsDataProvider(): array
     {
         return [
@@ -92,14 +89,6 @@ class RedisInMemoryLoggerTest extends Unit
         ];
     }
 
-    /**
-     * @param string|null $protocol
-     * @param string|null $host
-     * @param int|null $port
-     * @param string|null $database
-     *
-     * @return string
-     */
     public function buildDsnString(?string $protocol = null, ?string $host = null, ?int $port = null, ?string $database = null): string
     {
         return sprintf(

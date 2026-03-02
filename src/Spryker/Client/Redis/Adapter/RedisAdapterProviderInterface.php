@@ -11,12 +11,6 @@ use Generated\Shared\Transfer\RedisConfigurationTransfer;
 
 interface RedisAdapterProviderInterface
 {
-    /**
-     * @param string $connectionKey
-     * @param \Generated\Shared\Transfer\RedisConfigurationTransfer $configurationTransfer
-     *
-     * @return void
-     */
     public function setupConnection(string $connectionKey, RedisConfigurationTransfer $configurationTransfer): void;
 
     /**

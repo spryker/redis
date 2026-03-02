@@ -25,37 +25,21 @@ class RedisDataCollector extends DataCollector
      */
     protected $redisLogger;
 
-    /**
-     * @param \Spryker\Shared\Redis\Logger\RedisLoggerInterface $redisLogger
-     */
     public function __construct(RedisLoggerInterface $redisLogger)
     {
         $this->redisLogger = $redisLogger;
     }
 
-    /**
-     * @param \Symfony\Component\HttpFoundation\Request $request
-     * @param \Symfony\Component\HttpFoundation\Response $response
-     * @param \Throwable|null $exception
-     *
-     * @return void
-     */
     public function collect(Request $request, Response $response, ?Throwable $exception = null): void
     {
         $this->data['calls'] = $this->redisLogger->getLogs();
     }
 
-    /**
-     * @return string
-     */
     public function getName(): string
     {
         return static::COLLECTOR_NAME;
     }
 
-    /**
-     * @return void
-     */
     public function reset(): void
     {
         $this->data = [];

@@ -32,10 +32,6 @@ class RedisInMemoryLogger implements RedisLoggerInterface
      */
     protected $dsnString;
 
-    /**
-     * @param \Spryker\Shared\Redis\Dependency\Service\RedisToUtilEncodingServiceInterface $utilEncodingService
-     * @param \Generated\Shared\Transfer\RedisConfigurationTransfer|null $redisConfigurationTransfer
-     */
     public function __construct(RedisToUtilEncodingServiceInterface $utilEncodingService, ?RedisConfigurationTransfer $redisConfigurationTransfer = null)
     {
         $this->utilEncodingService = $utilEncodingService;
@@ -73,11 +69,6 @@ class RedisInMemoryLogger implements RedisLoggerInterface
         return static::$logs;
     }
 
-    /**
-     * @param array $payload
-     *
-     * @return array
-     */
     protected function normalizePayload(array $payload): array
     {
         $normalizedPayload = [];
@@ -95,21 +86,11 @@ class RedisInMemoryLogger implements RedisLoggerInterface
         return $normalizedPayload;
     }
 
-    /**
-     * @param string $data
-     *
-     * @return bool
-     */
     protected function isBinaryString(string $data): bool
     {
         return preg_match('~[^\x20-\x7E\t\r\n]~', $data) > 0;
     }
 
-    /**
-     * @param \Generated\Shared\Transfer\RedisConfigurationTransfer|null $redisConfigurationTransfer
-     *
-     * @return void
-     */
     protected function buildDsnString(?RedisConfigurationTransfer $redisConfigurationTransfer = null): void
     {
         $dsnString = static::DSN_STRING_TEMPLATE_UNKNOWN;

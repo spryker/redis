@@ -49,9 +49,6 @@ class RedisClientNotMockedTest extends Unit
      */
     protected RedisClientTester $tester;
 
-    /**
-     * @return void
-     */
     protected function setUp(): void
     {
         parent::setUp();
@@ -722,9 +719,6 @@ class RedisClientNotMockedTest extends Unit
         $this->assertEquals('1', $this->tester->getClient()->get(static::CONNECTION_KEY, $counterKey));
     }
 
-    /**
-     * @return array
-     */
     public function getUsePhpredisDataProvider(): array
     {
         return [
@@ -733,9 +727,6 @@ class RedisClientNotMockedTest extends Unit
         ];
     }
 
-    /**
-     * @return array
-     */
     public function getCompressionDataProvider(): array
     {
         return [
@@ -746,12 +737,6 @@ class RedisClientNotMockedTest extends Unit
         ];
     }
 
-    /**
-     * @param bool $usePhpredis
-     * @param bool $isCompressionEnabled
-     *
-     * @return void
-     */
     protected function mockConfig(bool $usePhpredis, bool $isCompressionEnabled): void
     {
         $this->tester->mockConfigMethod('usePhpredis', $usePhpredis);
@@ -763,9 +748,6 @@ class RedisClientNotMockedTest extends Unit
         $this->setupTestConnection();
     }
 
-    /**
-     * @return void
-     */
     protected function setupTestConnection(): void
     {
         $configurationTransfer = (new RedisConfigurationTransfer())
@@ -781,9 +763,6 @@ class RedisClientNotMockedTest extends Unit
         $this->tester->getClient()->flushDb(static::CONNECTION_KEY);
     }
 
-    /**
-     * @return \Generated\Shared\Transfer\RedisCredentialsTransfer
-     */
     protected function getConnectionCredentials(): RedisCredentialsTransfer
     {
         return (new RedisCredentialsTransfer())

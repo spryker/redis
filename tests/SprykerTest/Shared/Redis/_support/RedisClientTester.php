@@ -60,14 +60,6 @@ class RedisClientTester extends Actor
      */
     protected $redisToUtilEncodingServiceBridge;
 
-    /**
-     * @param string $scheme
-     * @param string $host
-     * @param int $port
-     * @param string $database
-     *
-     * @return \Spryker\Shared\Redis\Logger\RedisInMemoryLogger
-     */
     public function createRedisInMemoryLogger(
         string $scheme = self::DEFAULT_REDIS_SCHEME,
         string $host = self::DEFAULT_REDIS_HOST,
@@ -104,9 +96,6 @@ class RedisClientTester extends Actor
         return $this->getUtilEncodingService()->encodeJson($data, $options) ?? '';
     }
 
-    /**
-     * @return \Spryker\Shared\Redis\Dependency\Service\RedisToUtilEncodingServiceInterface
-     */
     protected function getUtilEncodingService(): RedisToUtilEncodingServiceInterface
     {
         if (!$this->redisToUtilEncodingServiceBridge) {

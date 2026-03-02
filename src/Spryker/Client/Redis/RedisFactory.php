@@ -23,9 +23,6 @@ use Spryker\Shared\Redis\Dependency\Service\RedisToUtilEncodingServiceInterface;
  */
 class RedisFactory extends AbstractFactory
 {
-    /**
-     * @return \Spryker\Client\Redis\Adapter\RedisAdapterProviderInterface
-     */
     public function createRedisAdapterProvider(): RedisAdapterProviderInterface
     {
         return new RedisAdapterProvider(
@@ -33,9 +30,6 @@ class RedisFactory extends AbstractFactory
         );
     }
 
-    /**
-     * @return \Spryker\Client\Redis\Adapter\Factory\RedisAdapterFactoryInterface
-     */
     public function createRedisAdapterFactory(): RedisAdapterFactoryInterface
     {
         if ($this->getConfig()->usePhpredis()) {
@@ -45,9 +39,6 @@ class RedisFactory extends AbstractFactory
         return $this->createPredisAdapterFactory();
     }
 
-    /**
-     * @return \Spryker\Client\Redis\Adapter\Factory\RedisAdapterFactoryInterface
-     */
     public function createPredisAdapterFactory(): RedisAdapterFactoryInterface
     {
         return new PredisAdapterFactory(
@@ -57,9 +48,6 @@ class RedisFactory extends AbstractFactory
         );
     }
 
-    /**
-     * @return \Spryker\Client\Redis\Adapter\Factory\RedisAdapterFactoryInterface
-     */
     public function createPhpredisAdapterFactory(): RedisAdapterFactoryInterface
     {
         return new PhpredisAdapterFactory(
@@ -69,17 +57,11 @@ class RedisFactory extends AbstractFactory
         );
     }
 
-    /**
-     * @return \Spryker\Client\Redis\Compressor\CompressorInterface
-     */
     public function createCompressor(): CompressorInterface
     {
         return new Compressor($this->getConfig(), $this->getKeyValueCompressorStrategies());
     }
 
-    /**
-     * @return \Spryker\Shared\Redis\Dependency\Service\RedisToUtilEncodingServiceInterface
-     */
     public function getUtilEncodingService(): RedisToUtilEncodingServiceInterface
     {
         return $this->getProvidedDependency(RedisDependencyProvider::SERVICE_UTIL_ENCODING);

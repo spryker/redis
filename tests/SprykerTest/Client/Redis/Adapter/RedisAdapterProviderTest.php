@@ -42,9 +42,6 @@ class RedisAdapterProviderTest extends Unit
      */
     protected $connectionProvider;
 
-    /**
-     * @return void
-     */
     protected function setUp(): void
     {
         parent::setUp();
@@ -54,9 +51,6 @@ class RedisAdapterProviderTest extends Unit
         );
     }
 
-    /**
-     * @return void
-     */
     protected function tearDown(): void
     {
         parent::tearDown();
@@ -64,18 +58,12 @@ class RedisAdapterProviderTest extends Unit
         $this->cleanupConnectionPool();
     }
 
-    /**
-     * @return void
-     */
     public function testThrowsExceptionWhenConnectionNotInitialized(): void
     {
         $this->expectException(RedisAdapterNotInitializedException::class);
         $this->connectionProvider->getAdapter(static::CONNECTION_KEY_SESSION);
     }
 
-    /**
-     * @return void
-     */
     public function testCanSetUpNewConnection(): void
     {
         $this->connectionProvider->setupConnection(static::CONNECTION_KEY_SESSION, new RedisConfigurationTransfer());
@@ -84,9 +72,6 @@ class RedisAdapterProviderTest extends Unit
         $this->assertInstanceOf(RedisAdapterInterface::class, $connection);
     }
 
-    /**
-     * @return void
-     */
     public function testCanPrepareDifferentConnectionsForDifferentConnectionKeys(): void
     {
         $this->connectionProvider->setupConnection(static::CONNECTION_KEY_SESSION, new RedisConfigurationTransfer());
@@ -98,9 +83,6 @@ class RedisAdapterProviderTest extends Unit
         $this->assertNotSame($sessionConnection, $storageConnection);
     }
 
-    /**
-     * @return void
-     */
     public function testDoesNotSetUpNewConnectionForTheSameConnectionKey(): void
     {
         $configurationTransfer = new RedisConfigurationTransfer();
@@ -115,9 +97,6 @@ class RedisAdapterProviderTest extends Unit
         $this->assertSame($connection1, $connection2);
     }
 
-    /**
-     * @return void
-     */
     protected function cleanupConnectionPool(): void
     {
         $clientPoolReflection = new ReflectionProperty(RedisAdapterProvider::class, 'clientPool');

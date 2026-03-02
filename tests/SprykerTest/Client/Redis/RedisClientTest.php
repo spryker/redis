@@ -101,9 +101,6 @@ class RedisClientTest extends Unit
         $this->tester->getClient()->set('predis', RedisClientTester::KEY, $originalValue);
     }
 
-    /**
-     * @return void
-     */
     public function testCanHandleDelCall(): void
     {
         // Arrange
@@ -120,9 +117,6 @@ class RedisClientTest extends Unit
         $this->tester->getClient()->del('predis', $keys);
     }
 
-    /**
-     * @return void
-     */
     public function testCanHandleEvalCall(): void
     {
         // Arrange
@@ -193,9 +187,6 @@ class RedisClientTest extends Unit
         $this->tester->getClient()->mset('predis', $dictionary);
     }
 
-    /**
-     * @return void
-     */
     public function testCanHandleInfoCall(): void
     {
         // Arrange
@@ -212,9 +203,6 @@ class RedisClientTest extends Unit
         $this->tester->getClient()->info('predis', $section);
     }
 
-    /**
-     * @return void
-     */
     public function testCanHandleKeysCall(): void
     {
         // Arrange
@@ -230,9 +218,6 @@ class RedisClientTest extends Unit
         $this->tester->getClient()->keys('predis', RedisClientTester::KEY);
     }
 
-    /**
-     * @return void
-     */
     public function testCanHandleScanCall(): void
     {
         // Arrange
@@ -250,9 +235,6 @@ class RedisClientTest extends Unit
         $this->tester->getClient()->scan('predis', $cursor, $options);
     }
 
-    /**
-     * @return void
-     */
     public function testCanHandleDbSizeCall(): void
     {
         // Arrange
@@ -268,9 +250,6 @@ class RedisClientTest extends Unit
         $this->tester->getClient()->dbSize('predis');
     }
 
-    /**
-     * @return void
-     */
     public function testCanHandleFlushDbCall(): void
     {
         // Arrange
@@ -285,9 +264,6 @@ class RedisClientTest extends Unit
         $this->tester->getClient()->flushDb('predis');
     }
 
-    /**
-     * @return void
-     */
     public function testCanHandleIncr(): void
     {
         // Arrange

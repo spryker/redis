@@ -15,11 +15,6 @@ use Spryker\Client\Redis\Exception\ConnectionConfigurationException;
 
 class PhpredisAdapterFactory extends AbstractRedisAdapterFactory
 {
-    /**
-     * @param \Generated\Shared\Transfer\RedisConfigurationTransfer $redisConfigurationTransfer
-     *
-     * @return \Spryker\Client\Redis\Adapter\RedisAdapterInterface
-     */
     protected function createVersionAgnosticAdapter(RedisConfigurationTransfer $redisConfigurationTransfer): RedisAdapterInterface
     {
         return new VersionAgnosticPhpredisAdapter(
@@ -27,11 +22,6 @@ class PhpredisAdapterFactory extends AbstractRedisAdapterFactory
         );
     }
 
-    /**
-     * @param \Generated\Shared\Transfer\RedisConfigurationTransfer $redisConfigurationTransfer
-     *
-     * @return \Redis
-     */
     protected function createPhpredisClient(RedisConfigurationTransfer $redisConfigurationTransfer): Redis
     {
         $options = [];

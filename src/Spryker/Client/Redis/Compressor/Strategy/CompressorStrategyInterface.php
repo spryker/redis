@@ -9,25 +9,9 @@ namespace Spryker\Client\Redis\Compressor\Strategy;
 
 interface CompressorStrategyInterface
 {
-    /**
-     * @param mixed $value
-     *
-     * @return bool
-     */
     public function isCompressed(mixed $value): bool;
 
-    /**
-     * @param string $value
-     * @param int $level
-     *
-     * @return string|null
-     */
     public function compress(string $value, int $level): ?string;
 
-    /**
-     * @param string $value
-     *
-     * @return string|null
-     */
     public function decompress(string $value): ?string;
 }

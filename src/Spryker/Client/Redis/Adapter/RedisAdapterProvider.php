@@ -23,20 +23,11 @@ class RedisAdapterProvider implements RedisAdapterProviderInterface
      */
     protected $clientAdapterFactory;
 
-    /**
-     * @param \Spryker\Client\Redis\Adapter\Factory\RedisAdapterFactoryInterface $clientFactory
-     */
     public function __construct(RedisAdapterFactoryInterface $clientFactory)
     {
         $this->clientAdapterFactory = $clientFactory;
     }
 
-    /**
-     * @param string $connectionKey
-     * @param \Generated\Shared\Transfer\RedisConfigurationTransfer $configurationTransfer
-     *
-     * @return void
-     */
     public function setupConnection(string $connectionKey, RedisConfigurationTransfer $configurationTransfer): void
     {
         if (isset(static::$clientPool[$connectionKey])) {
@@ -64,11 +55,6 @@ class RedisAdapterProvider implements RedisAdapterProviderInterface
         return static::$clientPool[$connectionKey];
     }
 
-    /**
-     * @param \Generated\Shared\Transfer\RedisConfigurationTransfer $configurationTransfer
-     *
-     * @return \Spryker\Client\Redis\Adapter\RedisAdapterInterface
-     */
     protected function createClient(RedisConfigurationTransfer $configurationTransfer): RedisAdapterInterface
     {
         return $this->clientAdapterFactory->create($configurationTransfer);

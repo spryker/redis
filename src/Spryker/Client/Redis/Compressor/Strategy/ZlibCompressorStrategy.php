@@ -9,22 +9,11 @@ namespace Spryker\Client\Redis\Compressor\Strategy;
 
 class ZlibCompressorStrategy implements CompressorStrategyInterface
 {
-    /**
-     * @param mixed $value
-     *
-     * @return bool
-     */
     public function isCompressed(mixed $value): bool
     {
         return str_starts_with($value, "\x1f" . "\x8b" . "\x08");
     }
 
-    /**
-     * @param string $value
-     * @param int $level
-     *
-     * @return string|null
-     */
     public function compress(string $value, int $level): ?string
     {
         if (!function_exists('gzencode')) {
@@ -36,11 +25,6 @@ class ZlibCompressorStrategy implements CompressorStrategyInterface
         return $compressedValue ?: null;
     }
 
-    /**
-     * @param string $value
-     *
-     * @return string|null
-     */
     public function decompress(string $value): ?string
     {
         if (!function_exists('gzdecode')) {

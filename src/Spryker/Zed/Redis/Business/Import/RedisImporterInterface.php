@@ -9,11 +9,5 @@ namespace Spryker\Zed\Redis\Business\Import;
 
 interface RedisImporterInterface
 {
-    /**
-     * @param string $source
-     * @param string $destination
-     *
-     * @return bool
-     */
     public function import(string $source, string $destination): bool;
 }

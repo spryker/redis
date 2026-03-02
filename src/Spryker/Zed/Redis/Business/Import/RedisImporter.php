@@ -17,20 +17,11 @@ class RedisImporter implements RedisImporterInterface
      */
     protected $config;
 
-    /**
-     * @param \Spryker\Zed\Redis\RedisConfig $config
-     */
     public function __construct(RedisConfig $config)
     {
         $this->config = $config;
     }
 
-    /**
-     * @param string $source
-     * @param string $destination
-     *
-     * @return bool
-     */
     public function import(string $source, string $destination): bool
     {
         $command = $this->buildImportCliCommand($source, $destination);
@@ -41,12 +32,6 @@ class RedisImporter implements RedisImporterInterface
         return $process->isSuccessful();
     }
 
-    /**
-     * @param string $source
-     * @param string $destination
-     *
-     * @return string
-     */
     protected function buildImportCliCommand(string $source, string $destination): string
     {
         return sprintf('sudo cp %s %s', $source, $destination);
