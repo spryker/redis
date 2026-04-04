@@ -279,6 +279,12 @@ class RedisClientTest extends Unit
         $this->tester->getClient()->incr('predis', RedisClientTester::KEY);
     }
 
+    protected function tearDown(): void
+    {
+        $this->tester->restoreClientPool();
+        parent::tearDown();
+    }
+
     /**
      * @param bool $isCompressionEnabled
      *

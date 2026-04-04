@@ -55,6 +55,12 @@ class RedisClientNotMockedTest extends Unit
         $this->tester->resetClientPool();
     }
 
+    protected function tearDown(): void
+    {
+        $this->tester->restoreClientPool();
+        parent::tearDown();
+    }
+
     /**
      * @dataProvider getUsePhpredisDataProvider
      *

@@ -35,13 +35,33 @@ class RedisClientTester extends Actor
      */
     public const KEY = 'redis:key';
 
+    /**
+     * @var array<string, mixed>|null
+     */
+    protected ?array $savedClientPool = null;
+
     public function resetClientPool(): void
     {
-        $class = new ReflectionClass(RedisAdapterProvider::class);
-        $property = $class->getProperty('clientPool');
+        $property = (new ReflectionClass(RedisAdapterProvider::class))->getProperty('clientPool');
         $property->setAccessible(true);
-        // setValue for static properties requires passing null as the object parameter
+
+        if ($this->savedClientPool === null) {
+            $this->savedClientPool = $property->getValue() ?? [];
+        }
+
         $property->setValue(null, []);
+    }
+
+    public function restoreClientPool(): void
+    {
+        if ($this->savedClientPool === null) {
+            return;
+        }
+
+        $property = (new ReflectionClass(RedisAdapterProvider::class))->getProperty('clientPool');
+        $property->setAccessible(true);
+        $property->setValue(null, $this->savedClientPool);
+        $this->savedClientPool = null;
     }
 
     public function createTestCompressorStrategy(): CompressorStrategyInterface
