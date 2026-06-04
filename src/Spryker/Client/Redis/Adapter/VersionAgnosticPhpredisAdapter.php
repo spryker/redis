@@ -56,6 +56,7 @@ class VersionAgnosticPhpredisAdapter implements RedisAdapterInterface
 
     public function connect(): void
     {
+        $database = $this->client->getDBNum();
         $this->client->connect(
             $this->client->getHost(),
             $this->client->getPort(),
@@ -66,6 +67,7 @@ class VersionAgnosticPhpredisAdapter implements RedisAdapterInterface
         );
 
         $this->client->setOption(Redis::OPT_SCAN, Redis::SCAN_RETRY);
+        $this->client->select($database);
     }
 
     public function disconnect(): void
