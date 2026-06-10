@@ -7,12 +7,23 @@
 
 namespace Spryker\Client\Redis\Adapter;
 
+use Generated\Shared\Transfer\RedisCredentialsTransfer;
 use Redis;
 
 class VersionAgnosticPhpredisAdapter implements RedisAdapterInterface
 {
-    public function __construct(protected Redis $client)
-    {
+    protected const string SCHEME_TLS = 'tls';
+
+    protected const string SSL_OPTION_CA_FILE = 'cafile';
+
+    protected const string SSL_OPTION_VERIFY_PEER = 'verify_peer';
+
+    protected const string SSL_OPTION_VERIFY_PEER_NAME = 'verify_peer_name';
+
+    public function __construct(
+        protected Redis $client,
+        protected ?RedisCredentialsTransfer $connectionCredentials = null,
+    ) {
     }
 
     public function get(string $key): ?string
@@ -56,23 +67,81 @@ class VersionAgnosticPhpredisAdapter implements RedisAdapterInterface
 
     public function connect(): void
     {
+        if ($this->client->isConnected()) {
+            return;
+        }
+
         $database = $this->client->getDBNum();
-        $this->client->connect(
-            $this->client->getHost(),
-            $this->client->getPort(),
-            (float)$this->client->getTimeout(),
-            $this->client->getPersistentID(),
-            0,
-            $this->client->getReadTimeout(),
-        );
+        $auth = $this->client->getAuth();
+        $context = $this->isTlsEnabled() ? ['ssl' => $this->buildSslContext()] : [];
+        $host = $this->resolveHost();
+
+        if ($this->connectionCredentials?->getIsPersistent() === true) {
+            $this->client->pconnect(
+                $host,
+                $this->client->getPort(),
+                (float)$this->client->getTimeout(),
+                null,
+                0,
+                $this->client->getReadTimeout(),
+                $context,
+            );
+        } else {
+            $this->client->connect(
+                $host,
+                $this->client->getPort(),
+                (float)$this->client->getTimeout(),
+                null,
+                0,
+                $this->client->getReadTimeout(),
+                $context,
+            );
+        }
+
+        if ($auth) {
+            $this->client->auth($auth);
+        }
 
         $this->client->setOption(Redis::OPT_SCAN, Redis::SCAN_RETRY);
         $this->client->select($database);
     }
 
+    protected function isTlsEnabled(): bool
+    {
+        return $this->connectionCredentials?->getScheme() === static::SCHEME_TLS;
+    }
+
+    /**
+     * @return array<string, mixed>
+     */
+    protected function buildSslContext(): array
+    {
+        $caFile = $this->connectionCredentials?->getSslCaFilePath();
+
+        if (!$caFile) {
+            return [
+                static::SSL_OPTION_VERIFY_PEER => false,
+                static::SSL_OPTION_VERIFY_PEER_NAME => false,
+            ];
+        }
+
+        return [
+            static::SSL_OPTION_CA_FILE => $caFile,
+            static::SSL_OPTION_VERIFY_PEER => true,
+            static::SSL_OPTION_VERIFY_PEER_NAME => true,
+        ];
+    }
+
+    protected function resolveHost(): string
+    {
+        return $this->client->getHost();
+    }
+
     public function disconnect(): void
     {
-        $this->client->close();
+        if ($this->client->isConnected()) {
+            $this->client->close();
+        }
     }
 
     public function isConnected(): bool

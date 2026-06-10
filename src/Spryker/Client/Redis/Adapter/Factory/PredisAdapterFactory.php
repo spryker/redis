@@ -8,6 +8,7 @@
 namespace Spryker\Client\Redis\Adapter\Factory;
 
 use Generated\Shared\Transfer\RedisConfigurationTransfer;
+use Generated\Shared\Transfer\RedisCredentialsTransfer;
 use Predis\Client;
 use Spryker\Client\Redis\Adapter\RedisAdapterInterface;
 use Spryker\Client\Redis\Adapter\VersionAgnosticPredisAdapter;
@@ -21,11 +22,34 @@ class PredisAdapterFactory extends AbstractRedisAdapterFactory
         );
     }
 
-    protected function createPredisClient(RedisConfigurationTransfer $redisConfigurationTransfer): Client
+    public function createPredisClient(RedisConfigurationTransfer $redisConfigurationTransfer): Client
     {
+        $connectionParameters = $this->getConnectionParameters($redisConfigurationTransfer);
+        $connectionCredentials = $redisConfigurationTransfer->getConnectionCredentials();
+
+        if (is_array($connectionParameters)) {
+            $connectionParameters = $this->applyTlsConnectionParameters($connectionParameters, $connectionCredentials);
+        }
+
         return new Client(
-            $this->getConnectionParameters($redisConfigurationTransfer),
+            $connectionParameters,
             $redisConfigurationTransfer->getClientOptions(),
         );
+    }
+
+    public function applyTlsConnectionParameters(array $connectionParameters, ?RedisCredentialsTransfer $credentialsTransfer): array
+    {
+        if (!$this->isTlsEnabled($credentialsTransfer)) {
+            return $connectionParameters;
+        }
+
+        $connectionParameters['scheme'] = 'tls';
+        $connectionParameters['ssl'] = $this->buildSslOptions($credentialsTransfer);
+
+        if ($credentialsTransfer?->getIsPersistent()) {
+            $connectionParameters['persistent'] = true;
+        }
+
+        return $connectionParameters;
     }
 }

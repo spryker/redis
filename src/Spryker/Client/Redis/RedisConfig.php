@@ -12,6 +12,8 @@ use Spryker\Shared\Redis\RedisConstants;
 
 class RedisConfig extends AbstractBundleConfig
 {
+    protected const string SCHEME_TCP = 'tcp';
+
     /**
      * @var int
      */
@@ -83,5 +85,43 @@ class RedisConfig extends AbstractBundleConfig
     public function usePhpredis(): bool
     {
         return false;
+    }
+
+    /**
+     * Specification:
+     * - Returns the connection scheme for Redis (e.g. "tcp" or "tls").
+     * - Defaults to "tcp" when not configured.
+     *
+     * @api
+     */
+    public function getScheme(): string
+    {
+        return $this->get(RedisConstants::REDIS_SCHEME, static::SCHEME_TCP);
+    }
+
+    /**
+     * Specification:
+     * - Returns path to the CA certificate file for TLS peer verification.
+     * - Returns null when no certificate is configured — peer verification is disabled in that case.
+     *
+     * @api
+     */
+    public function getSslCaFilePath(): ?string
+    {
+        $caFile = $this->get(RedisConstants::REDIS_SSL_CA_FILE_PATH, null);
+
+        return $caFile ?: null;
+    }
+
+    /**
+     * Specification:
+     * - Returns the prefix prepended to every Redis key.
+     * - Empty string means no prefix (keys are passed through unchanged).
+     *
+     * @api
+     */
+    public function getKeyPrefix(): string
+    {
+        return $this->get(RedisConstants::REDIS_KEY_PREFIX, '');
     }
 }

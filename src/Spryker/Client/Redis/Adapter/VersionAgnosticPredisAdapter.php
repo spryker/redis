@@ -64,12 +64,16 @@ class VersionAgnosticPredisAdapter implements RedisAdapterInterface
 
     public function connect(): void
     {
-        $this->client->connect();
+        if (!$this->client->isConnected()) {
+            $this->client->connect();
+        }
     }
 
     public function disconnect(): void
     {
-        $this->client->disconnect();
+        if ($this->client->isConnected()) {
+            $this->client->disconnect();
+        }
     }
 
     public function isConnected(): bool

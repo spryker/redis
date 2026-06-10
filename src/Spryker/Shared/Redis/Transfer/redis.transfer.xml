@@ -12,9 +12,11 @@
         <property name="scheme" type="string"/>
         <property name="host" type="string"/>
         <property name="port" type="string"/>
+        <property name="username" type="string"/>
         <property name="password" type="string"/>
         <property name="database" type="int"/>
         <property name="isPersistent" type="bool"/>
+        <property name="sslCaFilePath" type="string"/>
     </transfer>
 
 </transfers>

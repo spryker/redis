@@ -9,6 +9,7 @@ namespace Spryker\Client\Redis\Adapter\Factory;
 
 use Generated\Shared\Transfer\RedisConfigurationTransfer;
 use Generated\Shared\Transfer\RedisCredentialsTransfer;
+use Spryker\Client\Redis\Adapter\KeyPrefixRedisAdapter;
 use Spryker\Client\Redis\Adapter\LoggableRedisAdapter;
 use Spryker\Client\Redis\Adapter\RedisAdapterInterface;
 use Spryker\Client\Redis\Adapter\RedisCompressionAdapter;
@@ -21,6 +22,14 @@ use Spryker\Shared\Redis\Logger\RedisLoggerInterface;
 
 abstract class AbstractRedisAdapterFactory implements RedisAdapterFactoryInterface
 {
+    protected const string SCHEME_TLS = 'tls';
+
+    protected const string SSL_OPTION_CA_FILE = 'cafile';
+
+    protected const string SSL_OPTION_VERIFY_PEER = 'verify_peer';
+
+    protected const string SSL_OPTION_VERIFY_PEER_NAME = 'verify_peer_name';
+
     /**
      * @var string
      */
@@ -31,6 +40,15 @@ abstract class AbstractRedisAdapterFactory implements RedisAdapterFactoryInterfa
      */
     protected const CONNECTION_OPTIONS = 'CONNECTION_OPTIONS';
 
+    // RedisCredentialsTransfer::IS_PERSISTENT (isPersistent)
+    protected const string CREDENTIALS_KEY_IS_PERSISTENT = 'is_persistent';
+
+    // RedisCredentialsTransfer::SSL_CA_FILE_PATH (sslCaFilePath)
+    protected const string CREDENTIALS_KEY_SSL_CA_FILE_PATH = 'ssl_ca_file_path';
+
+    // No direct transfer property — retained for safety in case downstream code injects this key.
+    protected const string CREDENTIALS_KEY_IS_TLS = 'is_tls';
+
     public function __construct(
         protected RedisConfig $redisConfig,
         protected RedisToUtilEncodingServiceInterface $utilEncodingService,
@@ -40,11 +58,23 @@ abstract class AbstractRedisAdapterFactory implements RedisAdapterFactoryInterfa
 
     public function create(RedisConfigurationTransfer $redisConfigurationTransfer): RedisAdapterInterface
     {
-        if (!$this->redisConfig->isDevelopmentMode()) {
-            return $this->createRedisCompressionAdapter($redisConfigurationTransfer);
+        $this->normalizeCredentialsScheme($redisConfigurationTransfer->getConnectionCredentials());
+
+        $adapter = $this->redisConfig->isDevelopmentMode()
+            ? $this->createLoggableRedisAdapter($redisConfigurationTransfer)
+            : $this->createRedisCompressionAdapter($redisConfigurationTransfer);
+
+        return $this->createKeyPrefixAdapter($adapter);
+    }
+
+    public function createKeyPrefixAdapter(RedisAdapterInterface $adapter): RedisAdapterInterface
+    {
+        $keyPrefix = $this->redisConfig->getKeyPrefix();
+        if (!$keyPrefix) {
+            return $adapter;
         }
 
-        return $this->createLoggableRedisAdapter($redisConfigurationTransfer);
+        return new KeyPrefixRedisAdapter($adapter, $keyPrefix);
     }
 
     abstract protected function createVersionAgnosticAdapter(RedisConfigurationTransfer $redisConfigurationTransfer): RedisAdapterInterface;
@@ -77,7 +107,7 @@ abstract class AbstractRedisAdapterFactory implements RedisAdapterFactoryInterfa
      *
      * @return array|string
      */
-    protected function getConnectionParameters(RedisConfigurationTransfer $redisConfigurationTransfer)
+    public function getConnectionParameters(RedisConfigurationTransfer $redisConfigurationTransfer)
     {
         $configurationParameters = $redisConfigurationTransfer->getDataSourceNames();
 
@@ -92,7 +122,7 @@ abstract class AbstractRedisAdapterFactory implements RedisAdapterFactoryInterfa
         throw new ConnectionConfigurationException('Redis connection parameters are corrupt. Either DSN string or an array of configuration values should be provided.');
     }
 
-    protected function getFilteredConnectionCredentials(RedisConfigurationTransfer $redisConfigurationTransfer): array
+    public function getFilteredConnectionCredentials(RedisConfigurationTransfer $redisConfigurationTransfer): array
     {
         $connectionCredentialsTransfer = $redisConfigurationTransfer->getConnectionCredentials();
 
@@ -102,12 +132,66 @@ abstract class AbstractRedisAdapterFactory implements RedisAdapterFactoryInterfa
 
         $connectionCredentials = $connectionCredentialsTransfer->toArray();
         $connectionCredentials = $this->clearEmptyPassword($connectionCredentials);
+        $connectionCredentials = $this->clearEmptyUsername($connectionCredentials);
         $connectionCredentials = $this->clearEmptySchema($connectionCredentials);
+        $connectionCredentials = $this->clearNonConnectionFields($connectionCredentials);
 
         return $connectionCredentials;
     }
 
-    protected function clearEmptyPassword(array $connectionCredentials): array
+    public function clearNonConnectionFields(array $connectionCredentials): array
+    {
+        unset(
+            $connectionCredentials[static::CREDENTIALS_KEY_IS_TLS],
+            $connectionCredentials[static::CREDENTIALS_KEY_SSL_CA_FILE_PATH],
+            $connectionCredentials[static::CREDENTIALS_KEY_IS_PERSISTENT],
+        );
+
+        return $connectionCredentials;
+    }
+
+    public function normalizeCredentialsScheme(?RedisCredentialsTransfer $credentialsTransfer): ?RedisCredentialsTransfer
+    {
+        if ($credentialsTransfer === null || $credentialsTransfer->getScheme()) {
+            return $credentialsTransfer;
+        }
+
+        return $credentialsTransfer->setScheme($this->redisConfig->getScheme());
+    }
+
+    public function isTlsEnabled(?RedisCredentialsTransfer $credentialsTransfer): bool
+    {
+        $scheme = $credentialsTransfer?->getScheme() ?? $this->redisConfig->getScheme();
+
+        return $scheme === static::SCHEME_TLS;
+    }
+
+    /**
+     * @return array<string, mixed>
+     */
+
+    /**
+     * @return array<string, mixed>
+     */
+    public function buildSslOptions(?RedisCredentialsTransfer $credentialsTransfer): array
+    {
+        $caFile = $credentialsTransfer?->getSslCaFilePath() ?? $this->redisConfig->getSslCaFilePath();
+
+        if (!$caFile) {
+            return [
+                static::SSL_OPTION_VERIFY_PEER => false,
+                static::SSL_OPTION_VERIFY_PEER_NAME => false,
+            ];
+        }
+
+        return [
+            static::SSL_OPTION_CA_FILE => $caFile,
+            static::SSL_OPTION_VERIFY_PEER => true,
+            static::SSL_OPTION_VERIFY_PEER_NAME => true,
+        ];
+    }
+
+    public function clearEmptyPassword(array $connectionCredentials): array
     {
         if (isset($connectionCredentials[RedisCredentialsTransfer::PASSWORD]) && !$connectionCredentials[RedisCredentialsTransfer::PASSWORD]) {
             unset($connectionCredentials[RedisCredentialsTransfer::PASSWORD]);
@@ -116,7 +200,18 @@ abstract class AbstractRedisAdapterFactory implements RedisAdapterFactoryInterfa
         return $connectionCredentials;
     }
 
-    protected function clearEmptySchema(array $connectionCredentials): array
+    public function clearEmptyUsername(array $connectionCredentials): array
+    {
+        if (!empty($connectionCredentials[RedisCredentialsTransfer::USERNAME])) {
+            return $connectionCredentials;
+        }
+
+        unset($connectionCredentials[RedisCredentialsTransfer::USERNAME]);
+
+        return $connectionCredentials;
+    }
+
+    public function clearEmptySchema(array $connectionCredentials): array
     {
         if (array_key_exists(RedisCredentialsTransfer::SCHEME, $connectionCredentials) && !$connectionCredentials[RedisCredentialsTransfer::SCHEME]) {
             unset($connectionCredentials[RedisCredentialsTransfer::SCHEME]);
