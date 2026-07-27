@@ -112,6 +112,8 @@ class PredisAdapterFactoryTest extends Unit
 
     /**
      * @dataProvider provideTlsConnectionParameters
+     *
+     * @param array<string, bool|string>|null $expectedSsl
      */
     public function testApplyTlsConnectionParameters(
         RedisCredentialsTransfer $credentialsTransfer,

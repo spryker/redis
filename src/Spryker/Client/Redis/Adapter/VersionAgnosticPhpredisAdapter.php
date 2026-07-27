@@ -84,6 +84,7 @@ class VersionAgnosticPhpredisAdapter implements RedisAdapterInterface
                 null,
                 0,
                 $this->client->getReadTimeout(),
+                /** @phpstan-ignore argument.type (phpredis accepts the ssl context key; the extension stub omits it) */
                 $context,
             );
         } else {
@@ -94,6 +95,7 @@ class VersionAgnosticPhpredisAdapter implements RedisAdapterInterface
                 null,
                 0,
                 $this->client->getReadTimeout(),
+                /** @phpstan-ignore argument.type (phpredis accepts the ssl context key; the extension stub omits it) */
                 $context,
             );
         }
