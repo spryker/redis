@@ -43,7 +43,6 @@ class RedisClientTester extends Actor
     public function resetClientPool(): void
     {
         $property = (new ReflectionClass(RedisAdapterProvider::class))->getProperty('clientPool');
-        $property->setAccessible(true);
 
         if ($this->savedClientPool === null) {
             $this->savedClientPool = $property->getValue() ?? [];
@@ -59,7 +58,6 @@ class RedisClientTester extends Actor
         }
 
         $property = (new ReflectionClass(RedisAdapterProvider::class))->getProperty('clientPool');
-        $property->setAccessible(true);
         $property->setValue(null, $this->savedClientPool);
         $this->savedClientPool = null;
     }

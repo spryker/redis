@@ -100,7 +100,6 @@ class RedisAdapterProviderTest extends Unit
     protected function cleanupConnectionPool(): void
     {
         $clientPoolReflection = new ReflectionProperty(RedisAdapterProvider::class, 'clientPool');
-        $clientPoolReflection->setAccessible(true);
         $clientPool = $clientPoolReflection->getValue();
         unset($clientPool[static::CONNECTION_KEY_SESSION]);
         unset($clientPool[static::CONNECTION_KEY_STORAGE]);

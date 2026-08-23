@@ -76,7 +76,6 @@ class RedisClientTester extends Actor
 
         $refClass = new ReflectionClass(RedisInMemoryLogger::class);
         $property = $refClass->getProperty('logs');
-        $property->setAccessible(true);
         $property->setValue([]);
 
         return new RedisInMemoryLogger(
