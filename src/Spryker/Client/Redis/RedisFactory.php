@@ -23,11 +23,17 @@ use Spryker\Shared\Redis\Dependency\Service\RedisToUtilEncodingServiceInterface;
  */
 class RedisFactory extends AbstractFactory
 {
+    protected ?RedisAdapterProviderInterface $redisAdapterProvider = null;
+
     public function createRedisAdapterProvider(): RedisAdapterProviderInterface
     {
-        return new RedisAdapterProvider(
-            $this->createRedisAdapterFactory(),
-        );
+        if ($this->redisAdapterProvider === null) {
+            return $this->redisAdapterProvider = new RedisAdapterProvider(
+                $this->createRedisAdapterFactory(),
+            );
+        }
+
+        return $this->redisAdapterProvider;
     }
 
     public function createRedisAdapterFactory(): RedisAdapterFactoryInterface
