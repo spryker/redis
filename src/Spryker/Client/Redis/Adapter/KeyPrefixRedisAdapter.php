@@ -111,6 +111,16 @@ class KeyPrefixRedisAdapter implements RedisAdapterInterface
         return $this->adapter->incr($this->prefixKey($key));
     }
 
+    public function ttl(string $key): int
+    {
+        return $this->adapter->ttl($this->prefixKey($key));
+    }
+
+    public function expire(string $key, int $seconds): bool
+    {
+        return $this->adapter->expire($this->prefixKey($key), $seconds);
+    }
+
     protected function prefixKey(string $key): string
     {
         return $this->keyPrefix . $key;

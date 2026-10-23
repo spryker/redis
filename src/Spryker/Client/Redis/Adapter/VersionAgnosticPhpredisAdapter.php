@@ -20,6 +20,8 @@ class VersionAgnosticPhpredisAdapter implements RedisAdapterInterface
 
     protected const string SSL_OPTION_VERIFY_PEER_NAME = 'verify_peer_name';
 
+    protected const int TTL_KEY_NOT_EXISTS = -2;
+
     public function __construct(
         protected Redis $client,
         protected ?RedisCredentialsTransfer $connectionCredentials = null,
@@ -226,5 +228,17 @@ class VersionAgnosticPhpredisAdapter implements RedisAdapterInterface
         $result = $this->client->incr($key);
 
         return $result !== false ? $result : 0;
+    }
+
+    public function ttl(string $key): int
+    {
+        $result = $this->client->ttl($key);
+
+        return $result !== false ? $result : static::TTL_KEY_NOT_EXISTS;
+    }
+
+    public function expire(string $key, int $seconds): bool
+    {
+        return $this->client->expire($key, $seconds) === true;
     }
 }

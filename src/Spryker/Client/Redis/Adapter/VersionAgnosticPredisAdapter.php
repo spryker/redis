@@ -131,4 +131,14 @@ class VersionAgnosticPredisAdapter implements RedisAdapterInterface
     {
         return $this->client->incr($key);
     }
+
+    public function ttl(string $key): int
+    {
+        return $this->client->ttl($key);
+    }
+
+    public function expire(string $key, int $seconds): bool
+    {
+        return (bool)$this->client->expire($key, $seconds);
+    }
 }

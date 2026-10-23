@@ -160,6 +160,36 @@ class KeyPrefixRedisAdapterTest extends Unit
         $this->assertSame(5, $this->adapter->incr('counter'));
     }
 
+    public function testTtlPrefixesKey(): void
+    {
+        // Expect
+        $this->innerAdapterMock->expects($this->once())
+            ->method('ttl')
+            ->with(static::PREFIX . 'counter')
+            ->willReturn(100);
+
+        // Act
+        $ttl = $this->adapter->ttl('counter');
+
+        // Assert
+        $this->assertSame(100, $ttl);
+    }
+
+    public function testExpirePrefixesKey(): void
+    {
+        // Expect
+        $this->innerAdapterMock->expects($this->once())
+            ->method('expire')
+            ->with(static::PREFIX . 'counter', 100)
+            ->willReturn(true);
+
+        // Act
+        $isExpireSet = $this->adapter->expire('counter', 100);
+
+        // Assert
+        $this->assertTrue($isExpireSet);
+    }
+
     public function testPassthroughMethodsDelegateWithoutKeyModification(): void
     {
         $this->innerAdapterMock->expects($this->once())->method('connect');

@@ -279,6 +279,30 @@ class PredisCompressionAdapterTest extends Unit
         $this->redisCompressionAdapter->incr(RedisClientTester::KEY);
     }
 
+    public function testCanHandleTtl(): void
+    {
+        // Arrange
+        $this->setupPredisCompressionAdapter();
+
+        // Assert
+        $this->redisAdapterMock->expects($this->once())->method('ttl');
+
+        // Act
+        $this->redisCompressionAdapter->ttl(RedisClientTester::KEY);
+    }
+
+    public function testCanHandleExpire(): void
+    {
+        // Arrange
+        $this->setupPredisCompressionAdapter();
+
+        // Assert
+        $this->redisAdapterMock->expects($this->once())->method('expire');
+
+        // Act
+        $this->redisCompressionAdapter->expire(RedisClientTester::KEY, 100);
+    }
+
     protected function setupPredisCompressionAdapter(bool $isCompressionEnabled = true): void
     {
         $this->tester->mockConfigMethod('isCompressionEnabled', $isCompressionEnabled);

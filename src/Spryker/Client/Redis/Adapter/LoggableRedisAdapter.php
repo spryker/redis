@@ -168,4 +168,20 @@ class LoggableRedisAdapter implements RedisAdapterInterface
 
         return $this->redisAdapter->incr($key);
     }
+
+    public function ttl(string $key): int
+    {
+        $result = $this->redisAdapter->ttl($key);
+        $this->redisLogger->log('TTL', ['key' => $key], $result);
+
+        return $result;
+    }
+
+    public function expire(string $key, int $seconds): bool
+    {
+        $result = $this->redisAdapter->expire($key, $seconds);
+        $this->redisLogger->log('EXPIRE', ['key' => $key, 'seconds' => $seconds], $result);
+
+        return $result;
+    }
 }

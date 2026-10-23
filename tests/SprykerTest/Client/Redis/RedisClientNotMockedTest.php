@@ -725,6 +725,73 @@ class RedisClientNotMockedTest extends Unit
         $this->assertEquals('1', $this->tester->getClient()->get(static::CONNECTION_KEY, $counterKey));
     }
 
+    /**
+     * @dataProvider getUsePhpredisDataProvider
+     */
+    public function testTtlReturnsMinusOneForKeyWithoutExpiration(bool $usePhpredis): void
+    {
+        // Arrange
+        $this->mockConfig($usePhpredis, false);
+        $key = 'ttl_without_expiration';
+        $this->tester->getClient()->set(static::CONNECTION_KEY, $key, '1');
+
+        // Act
+        $ttl = $this->tester->getClient()->ttl(static::CONNECTION_KEY, $key);
+
+        // Assert
+        $this->assertSame(-1, $ttl);
+    }
+
+    /**
+     * @dataProvider getUsePhpredisDataProvider
+     */
+    public function testTtlReturnsMinusTwoForNonExistentKey(bool $usePhpredis): void
+    {
+        // Arrange
+        $this->mockConfig($usePhpredis, false);
+
+        // Act
+        $ttl = $this->tester->getClient()->ttl(static::CONNECTION_KEY, 'ttl_non_existent_key');
+
+        // Assert
+        $this->assertSame(-2, $ttl);
+    }
+
+    /**
+     * @dataProvider getUsePhpredisDataProvider
+     */
+    public function testExpireSetsTtlOnExistingKey(bool $usePhpredis): void
+    {
+        // Arrange
+        $this->mockConfig($usePhpredis, false);
+        $key = 'expire_existing_key';
+        $this->tester->getClient()->set(static::CONNECTION_KEY, $key, '1');
+
+        // Act
+        $isExpireSet = $this->tester->getClient()->expire(static::CONNECTION_KEY, $key, 100);
+
+        // Assert
+        $this->assertTrue($isExpireSet);
+        $ttl = $this->tester->getClient()->ttl(static::CONNECTION_KEY, $key);
+        $this->assertGreaterThan(0, $ttl);
+        $this->assertLessThanOrEqual(100, $ttl);
+    }
+
+    /**
+     * @dataProvider getUsePhpredisDataProvider
+     */
+    public function testExpireReturnsFalseForNonExistentKey(bool $usePhpredis): void
+    {
+        // Arrange
+        $this->mockConfig($usePhpredis, false);
+
+        // Act
+        $isExpireSet = $this->tester->getClient()->expire(static::CONNECTION_KEY, 'expire_non_existent_key', 100);
+
+        // Assert
+        $this->assertFalse($isExpireSet);
+    }
+
     public function getUsePhpredisDataProvider(): array
     {
         return [

@@ -285,6 +285,32 @@ class LoggableRedisAdapterTest extends Unit
         $this->loggableRedisAdapter->incr($key);
     }
 
+    public function testCanHandleTtl(): void
+    {
+        // Arrange
+        $this->redisAdapterMock->expects($this->once())->method('ttl')->willReturn(100);
+        $key = uniqid('kv:');
+        $this->redisLoggerMock->expects($this->once())
+            ->method('log')
+            ->with('TTL', ['key' => $key], 100);
+
+        // Act
+        $this->loggableRedisAdapter->ttl($key);
+    }
+
+    public function testCanHandleExpire(): void
+    {
+        // Arrange
+        $this->redisAdapterMock->expects($this->once())->method('expire')->willReturn(true);
+        $key = uniqid('kv:');
+        $this->redisLoggerMock->expects($this->once())
+            ->method('log')
+            ->with('EXPIRE', ['key' => $key, 'seconds' => 100], true);
+
+        // Act
+        $this->loggableRedisAdapter->expire($key, 100);
+    }
+
     protected function setupLoggableRedisAdapter(): void
     {
         $this->loggableRedisAdapter = new LoggableRedisAdapter(

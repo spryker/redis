@@ -275,6 +275,37 @@ class RedisClient extends AbstractClient implements RedisClientInterface
         return $this->getConnection($connectionKey)->incr($key);
     }
 
+    /**
+     * {@inheritDoc}
+     *
+     * @api
+     *
+     * @param string $connectionKey
+     * @param string $key
+     *
+     * @return int
+     */
+    public function ttl(string $connectionKey, string $key): int
+    {
+        return $this->getConnection($connectionKey)->ttl($key);
+    }
+
+    /**
+     * {@inheritDoc}
+     *
+     * @api
+     *
+     * @param string $connectionKey
+     * @param string $key
+     * @param int $seconds
+     *
+     * @return bool
+     */
+    public function expire(string $connectionKey, string $key, int $seconds): bool
+    {
+        return $this->getConnection($connectionKey)->expire($key, $seconds);
+    }
+
     protected function getConnection(string $connectionKey): RedisAdapterInterface
     {
         return $this->getFactory()->createRedisAdapterProvider()->getAdapter($connectionKey);

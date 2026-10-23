@@ -256,4 +256,36 @@ interface RedisClientInterface
      * @return int
      */
     public function incr(string $connectionKey, string $key): int;
+
+    /**
+     * Specification:
+     * - Returns the remaining time to live of the key in seconds.
+     * - Returns `-1` when the key exists and has no time to live.
+     * - Returns `-2` when the key does not exist.
+     * - @see https://redis.io/commands/ttl.
+     *
+     * @api
+     *
+     * @param string $connectionKey
+     * @param string $key
+     *
+     * @return int
+     */
+    public function ttl(string $connectionKey, string $key): int;
+
+    /**
+     * Specification:
+     * - Sets the time to live of the key in seconds.
+     * - Returns `true` when the time to live is set, `false` when the key does not exist.
+     * - @see https://redis.io/commands/expire.
+     *
+     * @api
+     *
+     * @param string $connectionKey
+     * @param string $key
+     * @param int $seconds
+     *
+     * @return bool
+     */
+    public function expire(string $connectionKey, string $key, int $seconds): bool;
 }

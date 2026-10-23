@@ -51,4 +51,8 @@ interface RedisAdapterInterface
     public function flushDb(): void;
 
     public function incr(string $key): int;
+
+    public function ttl(string $key): int;
+
+    public function expire(string $key, int $seconds): bool;
 }

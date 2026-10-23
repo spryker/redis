@@ -106,6 +106,16 @@ class RedisCompressionAdapter implements RedisAdapterInterface
         return $this->redisAdapter->incr($key);
     }
 
+    public function ttl(string $key): int
+    {
+        return $this->redisAdapter->ttl($key);
+    }
+
+    public function expire(string $key, int $seconds): bool
+    {
+        return $this->redisAdapter->expire($key, $seconds);
+    }
+
     protected function prepareSingleValueForSet(string $data): string
     {
         if (!$this->compressor->canBeCompressed($data)) {
