@@ -11,22 +11,49 @@ use Generated\Shared\Transfer\RedisConfigurationTransfer;
 use Generated\Shared\Transfer\RedisCredentialsTransfer;
 use Redis;
 use Spryker\Client\Redis\Adapter\RedisAdapterInterface;
+use Spryker\Client\Redis\Adapter\SentinelFailoverRedisAdapter;
 use Spryker\Client\Redis\Adapter\VersionAgnosticPhpredisAdapter;
 use Spryker\Client\Redis\Exception\ConnectionConfigurationException;
+use Spryker\Client\Redis\Resolver\SentinelMasterAddressResolver;
 
 class PhpredisAdapterFactory extends AbstractRedisAdapterFactory
 {
+    protected const string CLIENT_OPTION_SENTINEL_SERVICE_NAME = 'service';
+
     protected function createVersionAgnosticAdapter(RedisConfigurationTransfer $redisConfigurationTransfer): RedisAdapterInterface
     {
-        return new VersionAgnosticPhpredisAdapter(
+        $adapter = new VersionAgnosticPhpredisAdapter(
             $this->createPhpredisClient($redisConfigurationTransfer),
             $redisConfigurationTransfer->getConnectionCredentials(),
         );
+
+        if (!$this->isSentinelConfigured($redisConfigurationTransfer)) {
+            return $adapter;
+        }
+
+        return new SentinelFailoverRedisAdapter(
+            $adapter,
+            fn (): RedisAdapterInterface => new VersionAgnosticPhpredisAdapter(
+                $this->createPhpredisClient($redisConfigurationTransfer),
+                $redisConfigurationTransfer->getConnectionCredentials(),
+            ),
+        );
+    }
+
+    public function isSentinelConfigured(RedisConfigurationTransfer $redisConfigurationTransfer): bool
+    {
+        return $this->getSentinelServiceName($redisConfigurationTransfer) !== null
+            && $redisConfigurationTransfer->getDataSourceNames() !== [];
+    }
+
+    public function getSentinelServiceName(RedisConfigurationTransfer $redisConfigurationTransfer): ?string
+    {
+        return $redisConfigurationTransfer->getClientOptions()[static::CLIENT_OPTION_SENTINEL_SERVICE_NAME] ?? null;
     }
 
     public function createPhpredisClient(RedisConfigurationTransfer $redisConfigurationTransfer): Redis
     {
-        $connectionParameters = $this->getConnectionParameters($redisConfigurationTransfer);
+        $connectionParameters = $this->resolveConnectionParameters($redisConfigurationTransfer);
         $options = $this->buildPhpredisOptions($redisConfigurationTransfer, $connectionParameters);
 
         $redis = new Redis($options); //@phpstan-ignore-line
@@ -36,6 +63,34 @@ class PhpredisAdapterFactory extends AbstractRedisAdapterFactory
         }
 
         return $redis;
+    }
+
+    /**
+     * @return array<string, mixed>
+     */
+    public function resolveConnectionParameters(RedisConfigurationTransfer $redisConfigurationTransfer): array
+    {
+        $sentinelServiceName = $this->getSentinelServiceName($redisConfigurationTransfer);
+        $sentinelDataSourceNames = $redisConfigurationTransfer->getDataSourceNames();
+
+        if (!$sentinelServiceName || !$sentinelDataSourceNames) {
+            return $this->getConnectionParameters($redisConfigurationTransfer);
+        }
+
+        $masterConnectionParameters = $this->createSentinelMasterAddressResolver()->resolveMasterConnectionParameters(
+            $sentinelDataSourceNames,
+            $sentinelServiceName,
+        );
+
+        return array_merge(
+            $this->getFilteredConnectionCredentials($redisConfigurationTransfer),
+            $masterConnectionParameters,
+        );
+    }
+
+    public function createSentinelMasterAddressResolver(): SentinelMasterAddressResolver
+    {
+        return new SentinelMasterAddressResolver();
     }
 
     /**
