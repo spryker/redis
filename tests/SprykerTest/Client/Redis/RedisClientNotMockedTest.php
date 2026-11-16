@@ -44,9 +44,6 @@ class RedisClientNotMockedTest extends Unit
      */
     protected const CONNECTION_KEY = 'phpredis_test_connection';
 
-    /**
-     * @var \SprykerTest\Client\Redis\RedisClientTester
-     */
     protected RedisClientTester $tester;
 
     protected function setUp(): void
@@ -63,10 +60,6 @@ class RedisClientNotMockedTest extends Unit
 
     /**
      * @dataProvider getUsePhpredisDataProvider
-     *
-     * @param bool $usePhpredis
-     *
-     * @return void
      */
     public function testGet(bool $usePhpredis): void
     {
@@ -83,10 +76,6 @@ class RedisClientNotMockedTest extends Unit
 
     /**
      * @dataProvider getUsePhpredisDataProvider
-     *
-     * @param bool $usePhpredis
-     *
-     * @return void
      */
     public function testGetNonExistentKey(bool $usePhpredis): void
     {
@@ -102,11 +91,6 @@ class RedisClientNotMockedTest extends Unit
 
     /**
      * @dataProvider getCompressionDataProvider
-     *
-     * @param bool $usePhpredis
-     * @param bool $isCompressionEnabled
-     *
-     * @return void
      */
     public function testGetWithCompression(bool $usePhpredis, bool $isCompressionEnabled): void
     {
@@ -123,10 +107,6 @@ class RedisClientNotMockedTest extends Unit
 
     /**
      * @dataProvider getUsePhpredisDataProvider
-     *
-     * @param bool $usePhpredis
-     *
-     * @return void
      */
     public function testSetex(bool $usePhpredis): void
     {
@@ -143,10 +123,6 @@ class RedisClientNotMockedTest extends Unit
 
     /**
      * @dataProvider getUsePhpredisDataProvider
-     *
-     * @param bool $usePhpredis
-     *
-     * @return void
      */
     public function testSetexExpires(bool $usePhpredis): void
     {
@@ -164,10 +140,6 @@ class RedisClientNotMockedTest extends Unit
 
     /**
      * @dataProvider getUsePhpredisDataProvider
-     *
-     * @param bool $usePhpredis
-     *
-     * @return void
      */
     public function testSet(bool $usePhpredis): void
     {
@@ -184,10 +156,6 @@ class RedisClientNotMockedTest extends Unit
 
     /**
      * @dataProvider getUsePhpredisDataProvider
-     *
-     * @param bool $usePhpredis
-     *
-     * @return void
      */
     public function testSetWithExpiration(bool $usePhpredis): void
     {
@@ -209,12 +177,34 @@ class RedisClientNotMockedTest extends Unit
     }
 
     /**
+     * Counters and single-use tokens (e.g. login attempts, CAPTCHA replay protection) rely on both adapters
+     * reporting an `NX` collision as `false` and leaving the stored value untouched.
+     *
+     * @dataProvider getUsePhpredisDataProvider
+     */
+    public function testSetWithNotExistsFlagReturnsFalseAndKeepsTheStoredValueWhenTheKeyExists(bool $usePhpredis): void
+    {
+        if (version_compare(Client::VERSION, '2.0.0', '<')) {
+            $this->markTestSkipped('Test is not compatible with Predis version 1.x.');
+        }
+
+        // Arrange
+        $this->mockConfig($usePhpredis, false);
+        $this->tester->getClient()->del(static::CONNECTION_KEY, [static::TEST_KEY]);
+        $isFirstWriteSuccessful = $this->tester->getClient()->set(static::CONNECTION_KEY, static::TEST_KEY, '1', 'EX', 60, 'NX');
+
+        // Act
+        $isSecondWriteSuccessful = $this->tester->getClient()->set(static::CONNECTION_KEY, static::TEST_KEY, '2', 'EX', 60, 'NX');
+
+        // Assert
+        $this->assertTrue($isFirstWriteSuccessful);
+        $this->assertFalse($isSecondWriteSuccessful);
+        $this->assertSame('1', $this->tester->getClient()->get(static::CONNECTION_KEY, static::TEST_KEY));
+        $this->assertSame(2, $this->tester->getClient()->incr(static::CONNECTION_KEY, static::TEST_KEY));
+    }
+
+    /**
      * @dataProvider getCompressionDataProvider
-     *
-     * @param bool $usePhpredis
-     * @param bool $isCompressionEnabled
-     *
-     * @return void
      */
     public function testSetWithCompression(bool $usePhpredis, bool $isCompressionEnabled): void
     {
@@ -231,10 +221,6 @@ class RedisClientNotMockedTest extends Unit
 
     /**
      * @dataProvider getUsePhpredisDataProvider
-     *
-     * @param bool $usePhpredis
-     *
-     * @return void
      */
     public function testDel(bool $usePhpredis): void
     {
@@ -252,10 +238,6 @@ class RedisClientNotMockedTest extends Unit
 
     /**
      * @dataProvider getUsePhpredisDataProvider
-     *
-     * @param bool $usePhpredis
-     *
-     * @return void
      */
     public function testDelNonExistentKey(bool $usePhpredis): void
     {
@@ -271,10 +253,6 @@ class RedisClientNotMockedTest extends Unit
 
     /**
      * @dataProvider getUsePhpredisDataProvider
-     *
-     * @param bool $usePhpredis
-     *
-     * @return void
      */
     public function testEval(bool $usePhpredis): void
     {
@@ -294,10 +272,6 @@ class RedisClientNotMockedTest extends Unit
 
     /**
      * @dataProvider getUsePhpredisDataProvider
-     *
-     * @param bool $usePhpredis
-     *
-     * @return void
      */
     public function testEvalWithInvalidScript(bool $usePhpredis): void
     {
@@ -322,10 +296,6 @@ class RedisClientNotMockedTest extends Unit
 
     /**
      * @dataProvider getUsePhpredisDataProvider
-     *
-     * @param bool $usePhpredis
-     *
-     * @return void
      */
     public function testConnect(bool $usePhpredis): void
     {
@@ -341,10 +311,6 @@ class RedisClientNotMockedTest extends Unit
 
     /**
      * @dataProvider getUsePhpredisDataProvider
-     *
-     * @param bool $usePhpredis
-     *
-     * @return void
      */
     public function testDisconnect(bool $usePhpredis): void
     {
@@ -361,10 +327,6 @@ class RedisClientNotMockedTest extends Unit
 
     /**
      * @dataProvider getUsePhpredisDataProvider
-     *
-     * @param bool $usePhpredis
-     *
-     * @return void
      */
     public function testIsConnected(bool $usePhpredis): void
     {
@@ -381,10 +343,6 @@ class RedisClientNotMockedTest extends Unit
 
     /**
      * @dataProvider getUsePhpredisDataProvider
-     *
-     * @param bool $usePhpredis
-     *
-     * @return void
      */
     public function testMget(bool $usePhpredis): void
     {
@@ -409,10 +367,6 @@ class RedisClientNotMockedTest extends Unit
 
     /**
      * @dataProvider getUsePhpredisDataProvider
-     *
-     * @param bool $usePhpredis
-     *
-     * @return void
      */
     public function testMgetWithNonExistentKeys(bool $usePhpredis): void
     {
@@ -435,11 +389,6 @@ class RedisClientNotMockedTest extends Unit
 
     /**
      * @dataProvider getCompressionDataProvider
-     *
-     * @param bool $usePhpredis
-     * @param bool $isCompressionEnabled
-     *
-     * @return void
      */
     public function testMgetWithCompression(bool $usePhpredis, bool $isCompressionEnabled): void
     {
@@ -462,10 +411,6 @@ class RedisClientNotMockedTest extends Unit
 
     /**
      * @dataProvider getUsePhpredisDataProvider
-     *
-     * @param bool $usePhpredis
-     *
-     * @return void
      */
     public function testMset(bool $usePhpredis): void
     {
@@ -488,11 +433,6 @@ class RedisClientNotMockedTest extends Unit
 
     /**
      * @dataProvider getCompressionDataProvider
-     *
-     * @param bool $usePhpredis
-     * @param bool $isCompressionEnabled
-     *
-     * @return void
      */
     public function testMsetWithCompression(bool $usePhpredis, bool $isCompressionEnabled): void
     {
@@ -515,10 +455,6 @@ class RedisClientNotMockedTest extends Unit
 
     /**
      * @dataProvider getUsePhpredisDataProvider
-     *
-     * @param bool $usePhpredis
-     *
-     * @return void
      */
     public function testInfo(bool $usePhpredis): void
     {
@@ -534,10 +470,6 @@ class RedisClientNotMockedTest extends Unit
 
     /**
      * @dataProvider getUsePhpredisDataProvider
-     *
-     * @param bool $usePhpredis
-     *
-     * @return void
      */
     public function testInfoWithSection(bool $usePhpredis): void
     {
@@ -554,10 +486,6 @@ class RedisClientNotMockedTest extends Unit
 
     /**
      * @dataProvider getUsePhpredisDataProvider
-     *
-     * @param bool $usePhpredis
-     *
-     * @return void
      */
     public function testKeys(bool $usePhpredis): void
     {
@@ -579,10 +507,6 @@ class RedisClientNotMockedTest extends Unit
 
     /**
      * @dataProvider getUsePhpredisDataProvider
-     *
-     * @param bool $usePhpredis
-     *
-     * @return void
      */
     public function testKeysWithNonMatchingPattern(bool $usePhpredis): void
     {
@@ -599,10 +523,6 @@ class RedisClientNotMockedTest extends Unit
 
     /**
      * @dataProvider getUsePhpredisDataProvider
-     *
-     * @param bool $usePhpredis
-     *
-     * @return void
      */
     public function testScan(bool $usePhpredis): void
     {
@@ -639,10 +559,6 @@ class RedisClientNotMockedTest extends Unit
 
     /**
      * @dataProvider getUsePhpredisDataProvider
-     *
-     * @param bool $usePhpredis
-     *
-     * @return void
      */
     public function testDbSize(bool $usePhpredis): void
     {
@@ -663,10 +579,6 @@ class RedisClientNotMockedTest extends Unit
 
     /**
      * @dataProvider getUsePhpredisDataProvider
-     *
-     * @param bool $usePhpredis
-     *
-     * @return void
      */
     public function testFlushDb(bool $usePhpredis): void
     {
@@ -684,10 +596,6 @@ class RedisClientNotMockedTest extends Unit
 
     /**
      * @dataProvider getUsePhpredisDataProvider
-     *
-     * @param bool $usePhpredis
-     *
-     * @return void
      */
     public function testIncr(bool $usePhpredis): void
     {
@@ -706,10 +614,6 @@ class RedisClientNotMockedTest extends Unit
 
     /**
      * @dataProvider getUsePhpredisDataProvider
-     *
-     * @param bool $usePhpredis
-     *
-     * @return void
      */
     public function testIncrWithNonExistentKey(bool $usePhpredis): void
     {
