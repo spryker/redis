@@ -157,8 +157,8 @@ class VersionAgnosticPhpredisAdapter implements RedisAdapterInterface
     {
         $values = $this->client->mget($keys);
 
-        $values = array_map(function ($v) {
-            return ($v !== false) ? $v : null;
+        $values = array_map(function ($value) {
+            return ($value !== false) ? $value : null;
         }, $values);
 
         return $values;
